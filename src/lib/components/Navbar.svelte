@@ -24,39 +24,18 @@
     label: string;
   }
 
-  interface FeatureProps {
-    title: string;
-    description: string;
-  }
-
   const routeList: RouteProps[] = [
     { href: "#testimonials", label: "Testimonials" },
     { href: "#team", label: "Team" },
     { href: "#contact", label: "Contact" },
     { href: "#faq", label: "FAQ" },
-  ];
-
-  const featureList: FeatureProps[] = [
-    {
-      title: "Showcase Your Value ",
-      description: "Highlight how your product solves user problems.",
-    },
-    {
-      title: "Build Trust",
-      description: "Leverages social proof elements to establish trust and credibility.",
-    },
-    {
-      title: "Capture Leads",
-      description: "Make your lead capture form visually appealing and strategically.",
-    },
+    { href: "/newpage", label: "New Page" },  
   ];
 
   let isOpen = false;
 </script>
 
-<header
-  class="w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky border z-40 rounded-2xl flex justify-between items-center p-2 bg-card shadow-md dark:shadow-dark shadow-light"
->
+<header class="w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky border z-40 rounded-2xl flex justify-between items-center p-2 bg-card shadow-md dark:shadow-dark shadow-light">
   <a href="/" class="font-bold text-lg flex items-center">
     <ChevronsDown class="bg-gradient-to-tr from-primary via-primary/70 to-primary rounded-lg w-9 h-9 mr-2 border text-white" />
     ShadcnSvelte
@@ -98,6 +77,7 @@
       </SheetContent>
     </Sheet>
   </div>
+
   <div class="hidden lg:flex items-center gap-1">
     <DropdownMenu>
       <DropdownMenuTrigger class={`${buttonVariants({ variant: "ghost", size: "default" })} text-base`}>

@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-static";
+import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -8,10 +8,12 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-		adapter: adapter()
+		adapter: adapter({
+			// 确保生成 SPA 所需的 fallback 页面
+			fallback: 'index.html',
+			// 预压缩可以提高性能，但在调试时可以先禁用
+			precompress: false
+		})
 	}
 };
 
