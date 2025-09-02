@@ -22,14 +22,15 @@
   interface RouteProps {
     href: string;
     label: string;
+    reload?: boolean; // ← 仅对 /newpage 开启
   }
 
   const routeList: RouteProps[] = [
     { href: "#testimonials", label: "Testimonials" },
-    { href: "#team", label: "Team" },
-    { href: "#contact", label: "Contact" },
-    { href: "#faq", label: "FAQ" },
-    { href: "/newpage", label: "New Page" },  
+    { href: "#team",         label: "Team" },
+    { href: "#contact",      label: "Contact" },
+    { href: "#faq",          label: "FAQ" },
+    { href: "/newpage",      label: "New Page", reload: true },  
   ];
 
   let isOpen = false;
@@ -60,8 +61,13 @@
           </SheetHeader>
 
           <div class="flex flex-col gap-2">
-            {#each routeList as { href, label }}
-              <a on:click={() => (isOpen = false)} {href}>
+            {#each routeList as { href, label, reload }}
+              <a
+                href={href}
+                data-sveltekit-reload={reload ? true : undefined}
+                data-sveltekit-preload-data={reload ? 'off' : undefined}
+                on:click={() => (isOpen = false)}
+              >
                 <Button variant="ghost" class="justify-start text-base w-full">
                   {label}
                 </Button>
@@ -78,6 +84,7 @@
     </Sheet>
   </div>
 
+  <!-- Desktop -->
   <div class="hidden lg:flex items-center gap-1">
     <DropdownMenu>
       <DropdownMenuTrigger class={`${buttonVariants({ variant: "ghost", size: "default" })} text-base`}>
@@ -108,9 +115,13 @@
       </DropdownMenuContent>
     </DropdownMenu>
 
-    <!-- Navigation Links -->
-    {#each routeList as { href, label }}
-      <a {href} class={buttonVariants({ variant: "ghost", size: "default" })}>
+    {#each routeList as { href, label, reload }}
+      <a
+        href={href}
+        class={buttonVariants({ variant: "ghost", size: "default" })}
+        data-sveltekit-reload={reload ? true : undefined}
+        data-sveltekit-preload-data={reload ? 'off' : undefined}
+      >
         {label}
       </a>
     {/each}
@@ -131,11 +142,6 @@
 </header>
 
 <style>
-  .shadow-light {
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.085);
-  }
-
-  .shadow-dark {
-    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.141);
-  }
+  .shadow-light { box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.085); }
+  .shadow-dark  { box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.141); }
 </style>
