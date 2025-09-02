@@ -7,16 +7,19 @@ const config = {
 
   kit: {
     adapter: adapter({
-      // 主页仍按 SPA 方式构建
+      // 主页按 SPA 输出
       fallback: 'index.html',
       precompress: false
     }),
 
-    // 关键：不要在构建期去预渲染 /newpage（该路径由 Traefik 反代到外部 dashboard）
+    // 关键：构建期预渲染时，遇到 /newpage（由 Traefik 反代到外部 dashboard）的 404 直接忽略
     prerender: {
-      entries: ['*', '!/newpage'],
+      // 保持默认爬链（也可以显式写 true）
+      crawl: true,
       handleHttpError: ({ path, status, message }) => {
-        if (path === '/newpage' && status === 404) return; // 忽略这条
+        if (path === '/newpage' || path.startsWith('/newpage/')) {
+          if (status === 404) return; // 忽略 dashboard 占用路径的 404
+        }
         throw new Error(`${status} ${path}: ${message}`);
       }
     }
