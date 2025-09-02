@@ -22,29 +22,19 @@
   interface RouteProps {
     href: string;
     label: string;
-    reload?: boolean;
-    external?: boolean; // 新增：标识外部链接
+    external?: boolean; // true 表示走网关到外部服务
   }
 
+  // 内部锚点 + 外部 Dashboard（挂在 /newpage/）
   const routeList: RouteProps[] = [
     { href: "#testimonials", label: "Testimonials" },
     { href: "#team",         label: "Team" },
     { href: "#contact",      label: "Contact" },
     { href: "#faq",          label: "FAQ" },
-    // 标记为外部链接，强制重新加载以触发网关路由
-    { href: "/newpage",      label: "Dashboard", reload: true, external: true },  
+    { href: "/newpage/",     label: "Dashboard", external: true } // 关键：末尾斜杠 + external
   ];
 
   let isOpen = false;
-
-  // 处理导航点击
-  function handleNavClick(href: string, reload?: boolean, external?: boolean) {
-    if (external && reload) {
-      // 对于外部服务，使用 window.location 强制跳转
-      window.location.href = href;
-    }
-    // 其他情况使用默认的 SvelteKit 路由
-  }
 </script>
 
 <header class="w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky border z-40 rounded-2xl flex justify-between items-center p-2 bg-card shadow-md dark:shadow-dark shadow-light">
@@ -72,30 +62,26 @@
           </SheetHeader>
 
           <div class="flex flex-col gap-2">
-            {#each routeList as { href, label, reload, external }}
-              {#if external && reload}
-                <!-- 外部服务链接：使用 button + click handler -->
-                <Button 
-                  variant="ghost" 
-                  class="justify-start text-base w-full"
-                  on:click={() => {
-                    handleNavClick(href, reload, external);
-                    isOpen = false;
-                  }}
-                >
-                  {label}
-                </Button>
-              {:else}
-                <!-- 内部链接：使用正常的 a 标签 -->
+            {#each routeList as { href, label, external }}
+              {#if external}
+                <!-- 外部服务：原生 <a> + rel="external" + data-sveltekit-reload -->
                 <a
                   href={href}
-                  data-sveltekit-reload={reload ? true : undefined}
-                  data-sveltekit-preload-data={reload ? 'off' : undefined}
+                  rel="external"
+                  data-sveltekit-reload
+                  class={`${buttonVariants({ variant: "ghost", size: "default" })} justify-start text-base w-full`}
                   on:click={() => (isOpen = false)}
                 >
-                  <Button variant="ghost" class="justify-start text-base w-full">
-                    {label}
-                  </Button>
+                  {label}
+                </a>
+              {:else}
+                <!-- 内部链接：正常锚点 -->
+                <a
+                  href={href}
+                  class={`${buttonVariants({ variant: "ghost", size: "default" })} justify-start text-base w-full`}
+                  on:click={() => (isOpen = false)}
+                >
+                  {label}
                 </a>
               {/if}
             {/each}
@@ -114,51 +100,46 @@
   <div class="hidden lg:flex items-center gap-1">
     <DropdownMenu>
       <DropdownMenuTrigger class={`${buttonVariants({ variant: "ghost", size: "default" })} text-base`}>
-       Features
+        Features
       </DropdownMenuTrigger>
       <DropdownMenuContent class="w-[600px]">
         <div class="grid grid-cols-2 gap-5 p-4">
           <img
             src="https://github.com/sveltejs.png"
-            alt="Beach"
+            alt="Svelte"
             class="h-full w-full rounded-md object-cover"
           />
           <ul class="flex flex-col gap-2">
-            <!-- 注意：这里需要定义 featureList -->
-            <!-- {#each featureList as { title, description }} -->
-            <!--   <DropdownMenuItem class="rounded-md p-3 text-sm cursor-pointer"> -->
-            <!--     <div> -->
-            <!--       <p class="mb-1 font-semibold leading-none text-foreground"> -->
-            <!--         {title} -->
-            <!--       </p> -->
-            <!--       <p class="line-clamp-2 text-muted-foreground"> -->
-            <!--         {description} -->
-            <!--       </p> -->
-            <!--     </div> -->
-            <!--   </DropdownMenuItem> -->
-            <!-- {/each} -->
+            <!-- 可在此处填充 featureList -->
+            <!--
+            {#each featureList as { title, description }}
+              <DropdownMenuItem class="rounded-md p-3 text-sm cursor-pointer">
+                <div>
+                  <p class="mb-1 font-semibold leading-none text-foreground">{title}</p>
+                  <p class="line-clamp-2 text-muted-foreground">{description}</p>
+                </div>
+              </DropdownMenuItem>
+            {/each}
+            -->
           </ul>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
 
-    {#each routeList as { href, label, reload, external }}
-      {#if external && reload}
-        <!-- 外部服务链接：使用 button + click handler -->
-        <Button 
-          variant="ghost" 
-          size="default"
-          on:click={() => handleNavClick(href, reload, external)}
+    {#each routeList as { href, label, external }}
+      {#if external}
+        <a
+          href={href}
+          rel="external"
+          data-sveltekit-reload
+          class={buttonVariants({ variant: "ghost", size: "default" })}
         >
           {label}
-        </Button>
+        </a>
       {:else}
-        <!-- 内部链接：使用正常的 a 标签 -->
         <a
           href={href}
           class={buttonVariants({ variant: "ghost", size: "default" })}
-          data-sveltekit-reload={reload ? true : undefined}
-          data-sveltekit-preload-data={reload ? 'off' : undefined}
         >
           {label}
         </a>
